@@ -6,22 +6,30 @@ export default class myDiv extends HTMLElement{
         return await (await fetch(`${pathName}`)).text();
     }
     constructor(){
-        super();        
-        let shadowRoot = this.attachShadow({ mode: 'open' });
+        super();
+        this.attachShadow({ mode: "open" });   
+    }
+    // https://lenguajejs.com/webcomponents/funcionalidad/eventos-en-webcomponents/
+    handleEvent(event) {
+        console.log(event.type);
+        (event.type === "click") ? this.sendMessage()
+        : (event.type === "mousemove") ? this.sendMove()
+        : undefined
+    }
+    sendMessage() {
+        alert("¡Has hecho click!");
+    }
+    sendMove(){
+        alert("¡Has movido el puntero!");
+    }
+    connectedCallback() {
         Promise.resolve(myDiv.plantilla())
         .then(html=>{
-            shadowRoot.innerHTML = html;
+            this.shadowRoot.innerHTML = html;
+            this.button = this.shadowRoot.querySelector("#btn");
+            this.button.addEventListener("click", this);
+            this.button.addEventListener("mousemove", this);
         })
     }
-    // https://lenguajejs.com/webcomponents/componentes/atributos-webcomponent/
-    static get observedAttributes() {
-        return ["data-sede"]
-    }
-    attributeChangedCallback(name, old, now) {
-        document.querySelector("#myH1").innerHTML = now;
-        this.shadowRoot.children.mySede.innerHTML = now;
-        console.log(`El atributo ${name} ha sido modificado de ${old} a ${now}.`);
-    }
-    
 }
 customElements.define(name, myDiv);
